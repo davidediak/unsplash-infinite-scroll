@@ -4,7 +4,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import styled from 'styled-components';
 import Image from '../components/Image';
 import {CircularProgress, LinearProgress} from '@material-ui/core';
-import {getImageList, getImageListWithSearch} from '../utils/http-client';
+import {getData} from '../utils/http-client';
 import {UnsplashImage} from '../models/UnsplashImage';
 import Navbar from '../components/Navbar';
 
@@ -30,8 +30,8 @@ export default function Home() {
   const [query, setQuery] = useState('');
   const [images, setImage] = useState<UnsplashImage[]>([]);
 
-  const getData = () => {
-    getImageList(page).then(res => {
+  const fetchData = () => {
+    getData({query, page}).then(res => {
       setImage([...images, ...res.data]);
       setPage(page => page + 1);
       if (firstLoad) setFirstLoad(false);
@@ -39,12 +39,6 @@ export default function Home() {
   };
 
   // TODO handle no results
-  const getDataWithSearch = () => {
-    getImageListWithSearch(query, page).then(res => {
-      setImage([...images, ...res.data.results]);
-      setPage(page => page + 1);
-    });
-  };
 
   const handleSearchType = (search: string) => {
     setPage(1);
@@ -52,14 +46,9 @@ export default function Home() {
     setQuery(search);
   };
 
-  const handleScroll = () => {
-    if (query) return getDataWithSearch;
-    else return getData;
-  };
-
   const genereateKey = () => Math.random().toString();
 
-  useEffect(() => (query ? getDataWithSearch() : getData()), [query]);
+  useEffect(() => fetchData(), []);
 
   if (firstLoad)
     return (
@@ -74,7 +63,7 @@ export default function Home() {
       <div>
         <InfiniteScroll
           dataLength={images.length}
-          next={handleScroll()}
+          next={fetchData}
           hasMore={true}
           loader={<LinearProgress />}>
           <StyImagesContainer>

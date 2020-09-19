@@ -14,23 +14,35 @@ const fakeData: Promise<AxiosResponse<UnsplashImage[]>> = new Promise((resolve, 
   resolve({data: fakeImages} as AxiosResponse<UnsplashImage[]>);
 });
 
-export const getImageList = (
-  page: number,
-  pageSize = DEFAULT_PAGESIZE
-): Promise<AxiosResponse<UnsplashImage[]>> => {
+export const getData = ({
+  query,
+  page,
+}: {
+  query?: string;
+  page: number;
+}): Promise<AxiosResponse<UnsplashImage[]>> => {
+  if (query) return getImageListWithSearch(query, page);
+  else return getImageList(page);
+};
+
+export const getImageList = (page: number): Promise<AxiosResponse<UnsplashImage[]>> => {
   if (POOR_MAN_MODE) {
     return fakeData;
   } else {
-    return Axios.get(`${API_URL}/photos?client_id=${ACCESSKEY}&page=${page}&per_page=${pageSize}`);
+    return Axios.get(
+      `${API_URL}/photos?client_id=${ACCESSKEY}&page=${page}&per_page=${DEFAULT_PAGESIZE}`
+    );
   }
 };
 
 export const getImageListWithSearch = (
   query: string,
-  page: number,
-  pageSize = DEFAULT_PAGESIZE
-): Promise<AxiosResponse<{results: UnsplashImage[]}>> => {
+  page: number
+): Promise<AxiosResponse<UnsplashImage[]>> => {
   return Axios.get(
-    `${API_URL}/search/photos?client_id=${ACCESSKEY}&query=${query}&page=${page}&per_page=${pageSize}`
-  );
+    `${API_URL}/search/photos?client_id=${ACCESSKEY}&query=${query}&page=${page}&per_page=${DEFAULT_PAGESIZE}`
+  ).then(res => {
+    res.data = [...res.data.results];
+    return res;
+  });
 };
