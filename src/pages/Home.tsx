@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import styled from 'styled-components';
 import Image from '../components/Image';
-import {LinearProgress} from '@material-ui/core';
+import {CircularProgress, LinearProgress} from '@material-ui/core';
+import {getImageList} from '../utils/http-client';
 
-const ImageCell = styled.div`
+const StyImagesContainer = styled.div`
   margin: 10vh 12.5vw;
   display: flex;
   flex-wrap: wrap;
@@ -15,15 +15,21 @@ const ImageCell = styled.div`
   padding: 5px;
 `;
 
+const StyLoadingContainer = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+`;
+
 export default function Home() {
-  const API_URL = 'https://api.unsplash.com';
-  const ACCESSKEY = process.env.REACT_APP_UNSPLASH_ACCESSKEY;
-  const DEFAULT_COUNT = 15;
+  const [firstLoad, setFirstLoad] = useState(true);
   const [images, setImage] = useState([]); // TODO type unsplash image
 
-  const getData = (count = DEFAULT_COUNT) => {
-    axios.get(`${API_URL}/photos/random?client_id=${ACCESSKEY}&count=${count}`).then(res => {
+  const getData = () => {
+    getImageList().then(res => {
       setImage([...images, ...res.data]);
+      if (firstLoad) setFirstLoad(false);
     });
   };
 
@@ -33,6 +39,13 @@ export default function Home() {
     getData();
   }, []);
 
+  if (firstLoad)
+    return (
+      <StyLoadingContainer>
+        <CircularProgress />
+      </StyLoadingContainer>
+    );
+
   return (
     <div>
       <InfiniteScroll
@@ -40,11 +53,11 @@ export default function Home() {
         next={getData}
         hasMore={true}
         loader={<LinearProgress />}>
-        <ImageCell>
+        <StyImagesContainer>
           {images.map(image => (
             <Image url={image.urls.thumb} key={genereateKey()} id={genereateKey()} />
           ))}
-        </ImageCell>
+        </StyImagesContainer>
       </InfiniteScroll>
     </div>
   );
