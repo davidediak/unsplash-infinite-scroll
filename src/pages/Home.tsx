@@ -1,11 +1,12 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import styled from 'styled-components';
 import Image from '../components/Image';
 import {CircularProgress, LinearProgress} from '@material-ui/core';
-import {getImageList} from '../utils/http-client';
+import {getImageList, getImageListWithSearch} from '../utils/http-client';
 import {UnsplashImage} from '../models/UnsplashImage';
+import Navbar from '../components/Navbar';
 
 const StyImagesContainer = styled.div`
   margin: 10vh 12.5vw;
@@ -26,6 +27,7 @@ const StyLoadingContainer = styled.div`
 export default function Home() {
   const [firstLoad, setFirstLoad] = useState(true);
   const [page, setPage] = useState(1);
+  const [query, setQuery] = useState('');
   const [images, setImage] = useState<UnsplashImage[]>([]);
 
   const getData = () => {
@@ -36,11 +38,28 @@ export default function Home() {
     });
   };
 
+  // TODO handle no results
+  const getDataWithSearch = () => {
+    getImageListWithSearch(query, page).then(res => {
+      setImage([...images, ...res.data.results]);
+      setPage(page => page + 1);
+    });
+  };
+
+  const handleSearchType = (search: string) => {
+    setPage(1);
+    setImage([]);
+    setQuery(search);
+  };
+
+  const handleScroll = () => {
+    if (query) return getDataWithSearch;
+    else return getData;
+  };
+
   const genereateKey = () => Math.random().toString();
 
-  useEffect(() => {
-    getData();
-  }, []);
+  useEffect(() => (query ? getDataWithSearch() : getData()), [query]);
 
   if (firstLoad)
     return (
@@ -50,18 +69,21 @@ export default function Home() {
     );
 
   return (
-    <div>
-      <InfiniteScroll
-        dataLength={images.length}
-        next={getData}
-        hasMore={true}
-        loader={<LinearProgress />}>
-        <StyImagesContainer>
-          {images.map(image => (
-            <Image url={image.urls.thumb} key={genereateKey()} id={genereateKey()} />
-          ))}
-        </StyImagesContainer>
-      </InfiniteScroll>
-    </div>
+    <Fragment>
+      <Navbar searchCallback={handleSearchType} />
+      <div>
+        <InfiniteScroll
+          dataLength={images.length}
+          next={handleScroll()}
+          hasMore={true}
+          loader={<LinearProgress />}>
+          <StyImagesContainer>
+            {images.map(image => (
+              <Image url={image.urls.thumb} key={genereateKey()} id={genereateKey()} />
+            ))}
+          </StyImagesContainer>
+        </InfiniteScroll>
+      </div>
+    </Fragment>
   );
 }
