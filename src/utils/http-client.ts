@@ -23,10 +23,10 @@ export const getData = ({
   query,
   page,
 }: {
-  query?: string;
+  query?: string[];
   page: number;
 }): Promise<AxiosResponse<{results: UnsplashImage[]; total: number}>> => {
-  if (query) return getImageListWithSearch(query, page);
+  if (query?.length > 0) return getImageListWithSearch(query, page);
   else return getImageList(page);
 };
 
@@ -47,10 +47,11 @@ export const getImageList = (
 };
 
 export const getImageListWithSearch = (
-  query: string,
+  query: string[],
   page: number
 ): Promise<AxiosResponse<{results: UnsplashImage[]; total: number}>> => {
+  const queries = query.join(',');
   return Axios.get(
-    `${API_URL}/search/photos?client_id=${ACCESSKEY}&query=${query}&page=${page}&per_page=${DEFAULT_PAGESIZE}`
+    `${API_URL}/search/photos?client_id=${ACCESSKEY}&query=${queries}&page=${page}&per_page=${DEFAULT_PAGESIZE}`
   );
 };

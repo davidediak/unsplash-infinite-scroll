@@ -3,7 +3,7 @@ export interface ReducersStates {
 }
 
 export interface MainUIState {
-  query: string;
+  query: string[];
 }
 export interface UIState {
   mainUI: MainUIState;

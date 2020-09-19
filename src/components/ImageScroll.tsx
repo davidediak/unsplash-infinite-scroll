@@ -34,7 +34,7 @@ export default function ImageScroll() {
   const [page, setPage] = useState(0);
   const [images, setImage] = useState<UnsplashImage[]>([]);
   const [totalImages, setTotalImages] = useState(0);
-  const query = useSelector<ReducersStates, string>(state => state.UI.mainUI.query);
+  const query = useSelector<ReducersStates, string[]>(state => state.UI.mainUI.query);
 
   const fetchData = () => {
     console.log('fetch', page);

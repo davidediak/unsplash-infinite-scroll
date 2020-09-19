@@ -2,7 +2,7 @@ import {UIState, UiActionTypes, SEARCH_SUBMIT} from '../types';
 
 const initialState: UIState = {
   mainUI: {
-    query: '',
+    query: [],
   },
 };
 

@@ -23,7 +23,8 @@ export default function Navbar() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    dispatch({type: SEARCH_SUBMIT, payload: {query: search}});
+    const queries: string[] = search.split(' ').filter(t => t !== '');
+    dispatch({type: SEARCH_SUBMIT, payload: {query: queries}});
   };
 
   return (
