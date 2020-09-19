@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Image from '../components/Image';
 import {CircularProgress, LinearProgress} from '@material-ui/core';
 import {getImageList} from '../utils/http-client';
+import {UnsplashImage} from '../models/UnsplashImage';
 
 const StyImagesContainer = styled.div`
   margin: 10vh 12.5vw;
@@ -24,11 +25,13 @@ const StyLoadingContainer = styled.div`
 
 export default function Home() {
   const [firstLoad, setFirstLoad] = useState(true);
-  const [images, setImage] = useState([]); // TODO type unsplash image
+  const [page, setPage] = useState(1);
+  const [images, setImage] = useState<UnsplashImage[]>([]);
 
   const getData = () => {
-    getImageList().then(res => {
+    getImageList(page).then(res => {
       setImage([...images, ...res.data]);
+      setPage(page => page + 1);
       if (firstLoad) setFirstLoad(false);
     });
   };
