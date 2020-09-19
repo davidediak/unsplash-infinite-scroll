@@ -21,25 +21,28 @@ export default function Navbar() {
     setSearch(event.target.value);
   };
 
-  const handleClick = () => {
+  const handleSubmit = e => {
+    e.preventDefault();
     dispatch({type: SEARCH_SUBMIT, payload: {query: search}});
   };
 
   return (
     <AppBar style={{background: '#292929'}}>
       <StyToolbar>
-        <StyTextField
-          label="Search"
-          value={search}
-          onChange={handleSearchType}
-          InputProps={{
-            endAdornment: (
-              <StyBasedButton onClick={handleClick}>
-                <SearchIcon />
-              </StyBasedButton>
-            ),
-          }}
-        />
+        <form onSubmit={handleSubmit}>
+          <StyTextField
+            label="Search"
+            value={search}
+            onChange={handleSearchType}
+            InputProps={{
+              endAdornment: (
+                <StyBasedButton type="submit">
+                  <SearchIcon />
+                </StyBasedButton>
+              ),
+            }}
+          />
+        </form>
       </StyToolbar>
     </AppBar>
   );
