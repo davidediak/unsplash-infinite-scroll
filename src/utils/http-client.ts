@@ -6,13 +6,18 @@ import {fakeImage} from './fake-image';
 /* Since I'm a poor man, unsplash API limit me at 50 requests/h
    so set this flag to true if you reached the limit 😋
 */
-const POOR_MAN_MODE = true;
+const POOR_MAN_MODE = false;
 
-const fakeData: Promise<AxiosResponse<UnsplashImage[]>> = new Promise((resolve, reject) => {
-  const fakeImages: UnsplashImage[] = new Array(DEFAULT_PAGESIZE).fill(fakeImage);
+const fakeData: Promise<AxiosResponse<{results: UnsplashImage[]; total: number}>> = new Promise(
+  (resolve, reject) => {
+    const fakeImages: UnsplashImage[] = new Array(DEFAULT_PAGESIZE).fill(fakeImage);
 
-  resolve({data: fakeImages} as AxiosResponse<UnsplashImage[]>);
-});
+    resolve({data: {results: fakeImages, total: Infinity}} as AxiosResponse<{
+      results: UnsplashImage[];
+      total: number;
+    }>);
+  }
+);
 
 export const getData = ({
   query,
@@ -20,29 +25,32 @@ export const getData = ({
 }: {
   query?: string;
   page: number;
-}): Promise<AxiosResponse<UnsplashImage[]>> => {
+}): Promise<AxiosResponse<{results: UnsplashImage[]; total: number}>> => {
   if (query) return getImageListWithSearch(query, page);
   else return getImageList(page);
 };
 
-export const getImageList = (page: number): Promise<AxiosResponse<UnsplashImage[]>> => {
+export const getImageList = (
+  page: number
+): Promise<AxiosResponse<{results: UnsplashImage[]; total: number}>> => {
   if (POOR_MAN_MODE) {
     return fakeData;
   } else {
     return Axios.get(
       `${API_URL}/photos?client_id=${ACCESSKEY}&page=${page}&per_page=${DEFAULT_PAGESIZE}`
-    );
+    ).then(res => {
+      res.data.results = [...res.data];
+      res.data.total = Infinity;
+      return res;
+    });
   }
 };
 
 export const getImageListWithSearch = (
   query: string,
   page: number
-): Promise<AxiosResponse<UnsplashImage[]>> => {
+): Promise<AxiosResponse<{results: UnsplashImage[]; total: number}>> => {
   return Axios.get(
     `${API_URL}/search/photos?client_id=${ACCESSKEY}&query=${query}&page=${page}&per_page=${DEFAULT_PAGESIZE}`
-  ).then(res => {
-    res.data = [...res.data.results];
-    return res;
-  });
+  );
 };

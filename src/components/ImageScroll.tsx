@@ -24,16 +24,23 @@ const StyLoadingContainer = styled.div`
   transform: translateX(-50%) translateY(-50%);
 `;
 
+const StyNoResults = styled(StyLoadingContainer)`
+  && {
+    font-size: 4rem;
+  }
+`;
 export default function ImageScroll() {
   const [firstLoad, setFirstLoad] = useState(true);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [images, setImage] = useState<UnsplashImage[]>([]);
+  const [totalImages, setTotalImages] = useState(0);
   const query = useSelector<ReducersStates, string>(state => state.UI.mainUI.query);
 
   const fetchData = () => {
     console.log('fetch', page);
     getData({query, page}).then(res => {
-      setImage(prevImages => [...prevImages, ...res.data]);
+      setImage(prevImages => [...prevImages, ...res.data.results]);
+      setTotalImages(res.data.total);
       if (firstLoad) setFirstLoad(false);
     });
   };
@@ -41,12 +48,14 @@ export default function ImageScroll() {
   const genereateKey = () => Math.random().toString();
 
   useEffect(() => {
-    setPage(1);
+    setPage(0);
     setImage([]);
+    setFirstLoad(true);
   }, [query]);
 
   useEffect(() => {
-    fetchData();
+    if (page === 0) setPage(1);
+    else fetchData();
   }, [page]);
 
   const handleScroll = () => {
@@ -60,14 +69,20 @@ export default function ImageScroll() {
       </StyLoadingContainer>
     );
 
-  if (!firstLoad && images?.length === 0) return <div>No results</div>;
+  if (!firstLoad && images?.length === 0)
+    return (
+      <StyImagesContainer>
+        <StyNoResults> No results</StyNoResults>
+      </StyImagesContainer>
+    );
 
   return (
     <div>
       <InfiniteScroll
         dataLength={images.length}
         next={handleScroll}
-        hasMore={true}
+        hasMore={images.length < totalImages}
+        style={{overflow: 'hidden'}}
         loader={<LinearProgress />}>
         <StyImagesContainer>
           {images.map(image => (
