@@ -29,8 +29,9 @@ const StyNoResults = styled(StyLoadingContainer)`
     font-size: 4rem;
   }
 `;
-export default function ImageScroll() {
-  const [firstLoad, setFirstLoad] = useState(true);
+export default function ImageScroll({haveQueryFromRoute}: {haveQueryFromRoute: boolean}) {
+  const [firstNormalLoad, setFirstNormalLoad] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [images, setImage] = useState<UnsplashImage[]>([]);
   const [totalImages, setTotalImages] = useState(0);
@@ -41,7 +42,8 @@ export default function ImageScroll() {
     getData({query, page}).then(res => {
       setImage(prevImages => [...prevImages, ...res.data.results]);
       setTotalImages(res.data.total);
-      if (firstLoad) setFirstLoad(false);
+      if (loading) setLoading(false);
+      if (firstNormalLoad) setFirstNormalLoad(false);
     });
   };
 
@@ -50,29 +52,38 @@ export default function ImageScroll() {
   useEffect(() => {
     setPage(0);
     setImage([]);
-    setFirstLoad(true);
+    setLoading(true);
+    setFirstNormalLoad(false);
   }, [query]);
 
   useEffect(() => {
-    if (page === 0) setPage(1);
-    else fetchData();
-  }, [page]);
+    if (haveQueryFromRoute) setFirstNormalLoad(false);
+  }, [haveQueryFromRoute]);
+
+  useEffect(() => {
+    const isFirstNormalLoading = firstNormalLoad && !haveQueryFromRoute;
+    const isLoadingWithQueryInRoute = !firstNormalLoad && haveQueryFromRoute;
+    const isNormalSearch = !firstNormalLoad && !haveQueryFromRoute;
+    if (page === 0) {
+      if (isFirstNormalLoading || isLoadingWithQueryInRoute || isNormalSearch) setPage(1);
+    } else fetchData();
+  }, [firstNormalLoad, page]);
 
   const handleScroll = () => {
     setPage(page => page + 1);
   };
 
-  if (firstLoad)
+  if (loading)
     return (
       <StyLoadingContainer>
         <CircularProgress />
       </StyLoadingContainer>
     );
 
-  if (!firstLoad && images?.length === 0)
+  if (!loading && images?.length === 0)
     return (
       <StyImagesContainer>
-        <StyNoResults> No results</StyNoResults>
+        <StyNoResults>No results</StyNoResults>
       </StyImagesContainer>
     );
 

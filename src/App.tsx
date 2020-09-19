@@ -1,6 +1,7 @@
 import React from 'react';
+import {BrowserRouter as Router, Route} from 'react-router-dom';
 import './App.css';
-import Home from './pages/Home';
+import home from './pages/Home';
 import {MuiThemeProvider} from '@material-ui/core/styles';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import themeFile from './assets/theme';
@@ -12,7 +13,10 @@ function App() {
   return (
     <MuiThemeProvider theme={theme}>
       <Provider store={store}>
-        <Home />
+        <Router>
+          <Route exact path="/" component={home} />
+          <Route exact path="/search=:queries" component={home} />
+        </Router>
       </Provider>
     </MuiThemeProvider>
   );
