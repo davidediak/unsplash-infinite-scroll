@@ -1,7 +1,9 @@
 import {AppBar, Toolbar} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, Dispatch, useState} from 'react';
+import {useDispatch} from 'react-redux';
 import styled from 'styled-components';
+import {SEARCH_SUBMIT, UiActionTypes} from '../redux/types';
 import {StyBasedButton, StyTextField} from './styled-components';
 
 const StyToolbar = styled(Toolbar)`
@@ -11,7 +13,8 @@ const StyToolbar = styled(Toolbar)`
   }
 `;
 
-export default function Navbar({searchCallback}: {searchCallback: (query: string) => void}) {
+export default function Navbar() {
+  const dispatch: Dispatch<UiActionTypes> = useDispatch();
   const [search, setSearch] = useState('');
 
   const handleSearchType = (event: ChangeEvent<HTMLInputElement>) => {
@@ -19,7 +22,7 @@ export default function Navbar({searchCallback}: {searchCallback: (query: string
   };
 
   const handleClick = () => {
-    searchCallback(search);
+    dispatch({type: SEARCH_SUBMIT, payload: {query: search}});
   };
 
   return (
