@@ -1,10 +1,8 @@
 import {AppBar, Toolbar} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
-import React, {ChangeEvent, Dispatch, useEffect, useState} from 'react';
-import {useDispatch} from 'react-redux';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {StyBasedButton, StyTextField} from './styled-components';
-import {SEARCH_SUBMIT, UiActionTypes} from '../redux/types';
 const StyToolbar = styled(Toolbar)`
   && {
     display: flex;
@@ -12,15 +10,19 @@ const StyToolbar = styled(Toolbar)`
   }
 `;
 
-export default function Navbar({queryFromRoute}: {queryFromRoute: string}) {
-  const dispatch: Dispatch<UiActionTypes> = useDispatch();
+export default function Navbar({
+  onSubmit,
+  queryFromRoute,
+}: {
+  onSubmit: (query: string[]) => void;
+  queryFromRoute: string;
+}) {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
     if (queryFromRoute) {
       const queries: string[] = queryFromRoute.split(',').filter(t => t !== '');
       setSearch(queries.join(' '));
-      dispatch({type: SEARCH_SUBMIT, payload: {query: queries}});
     }
   }, [queryFromRoute]);
 
@@ -31,7 +33,7 @@ export default function Navbar({queryFromRoute}: {queryFromRoute: string}) {
   const handleSubmit = e => {
     e.preventDefault();
     const queries: string[] = search.split(' ').filter(t => t !== '');
-    dispatch({type: SEARCH_SUBMIT, payload: {query: queries}});
+    onSubmit(queries);
   };
 
   return (
