@@ -30,6 +30,11 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1;
+	font-family: 'Nunito', sans-serif;
+	font-size: 16px;
+	font-style: normal;
+	font-weight: normal;
+	background-color: #bfbfbf;
 }
 ol, ul {
 	list-style: none;
