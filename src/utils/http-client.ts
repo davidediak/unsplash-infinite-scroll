@@ -6,7 +6,7 @@ import {fakeImage} from './fake-image';
 /* Since I'm a poor man, unsplash API limit me at 50 requests/h
    so set this flag to true if you reached the limit 😋
 */
-const POOR_MAN_MODE = false;
+const POOR_MAN_MODE = true;
 
 const fakeData: Promise<AxiosResponse<{results: UnsplashImage[]; total: number}>> = new Promise(
   (resolve, reject) => {
