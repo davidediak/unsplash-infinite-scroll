@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import {StyBasedButton, StyTextField} from './styled-components';
 import {useHistory} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
-import {DO_RESET, UiActionTypes} from '../redux/types';
+import {DO_RESET, ReducersStates, UiActionTypes} from '../redux/types';
 import HomeIcon from '@material-ui/icons/Home';
 
 const StyToolbar = styled(Toolbar)`
@@ -27,7 +27,7 @@ export default function Navbar({onSubmit}: {onSubmit: (query: string[]) => void}
   const dispatch: Dispatch<UiActionTypes> = useDispatch();
   const [search, setSearch] = useState('');
   const history = useHistory();
-  const query = useSelector<any, string[]>(state => state.UI.mainUI.query);
+  const query = useSelector<ReducersStates, string[]>(state => state.UI.mainUI.query);
 
   useEffect(() => {
     if (query) {
