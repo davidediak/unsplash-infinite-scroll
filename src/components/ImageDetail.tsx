@@ -1,12 +1,13 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import {IconButton, Typography} from '@material-ui/core';
+import {CircularProgress, IconButton, Typography} from '@material-ui/core';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import CloseIcon from '@material-ui/icons/Close';
 import {UnsplashImage} from '../models/UnsplashImage';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
+import {StyLoadingContainer} from './styled-components';
 
 const ImgContainer = styled.div`
   display: flex;
@@ -66,8 +67,13 @@ export default function ImageDetail({
   closePopup: () => void;
   unsplashImage: UnsplashImage;
 }) {
+  const [imageLoading, setImageLoading] = useState(true);
   const handleClose = () => {
     closePopup();
+  };
+
+  const imageLoaded = () => {
+    setImageLoading(false);
   };
 
   return (
@@ -83,7 +89,16 @@ export default function ImageDetail({
         </StyMuiDialogTitle>
         <MuiDialogContent>
           <ImgContainer>
-            <StyImg src={unsplashImage?.urls?.full} />
+            {imageLoading && (
+              <StyLoadingContainer>
+                <CircularProgress />
+              </StyLoadingContainer>
+            )}
+            <StyImg
+              src={unsplashImage?.urls?.full}
+              onLoad={imageLoaded}
+              style={{visibility: imageLoading ? 'hidden' : 'visible'}}
+            />
           </ImgContainer>
           <StyTypography>
             <label>User:</label> {unsplashImage?.user?.name}

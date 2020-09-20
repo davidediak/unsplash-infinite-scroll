@@ -7,6 +7,7 @@ import Image from '../components/Image';
 import {UnsplashImage} from '../models/UnsplashImage';
 import {ReducersStates} from '../redux/types';
 import {getData} from '../utils/http-client';
+import {StyLoadingContainer} from './styled-components';
 
 const StyImagesContainer = styled.div`
   margin: 10vh 12.5vw;
@@ -15,13 +16,6 @@ const StyImagesContainer = styled.div`
   justify-content: center;
   align-items: center;
   padding: 5px;
-`;
-
-const StyLoadingContainer = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
 `;
 
 const StyNoResults = styled(StyLoadingContainer)`
