@@ -7,6 +7,10 @@ export interface UnsplashImage {
   likes: number;
   updated_at: string;
   urls: {
+    full: string;
     thumb: string;
+  };
+  user: {
+    name: string;
   };
 }

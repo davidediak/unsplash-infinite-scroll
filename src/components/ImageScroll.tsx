@@ -97,7 +97,12 @@ export default function ImageScroll({haveQueryFromRoute}: {haveQueryFromRoute: b
         loader={<LinearProgress />}>
         <StyImagesContainer>
           {images.map(image => (
-            <Image url={image.urls.thumb} key={genereateKey()} id={genereateKey()} />
+            <Image
+              url={image.urls.thumb}
+              key={genereateKey()}
+              id={genereateKey()}
+              unsplashImage={image}
+            />
           ))}
         </StyImagesContainer>
       </InfiniteScroll>
