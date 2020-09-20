@@ -1,4 +1,4 @@
-import {UIState, UiActionTypes, SEARCH_SUBMIT} from '../types';
+import {UIState, UiActionTypes, SEARCH_SUBMIT, DO_RESET} from '../types';
 
 const initialState: UIState = {
   mainUI: {
@@ -12,6 +12,11 @@ export default function (state = initialState, action: UiActionTypes): UIState {
       return {
         ...state,
         mainUI: {...state.mainUI, query: action.payload.query},
+      };
+
+    case DO_RESET:
+      return {
+        ...initialState,
       };
     default:
       return state;

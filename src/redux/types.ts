@@ -9,10 +9,14 @@ export interface UIState {
   mainUI: MainUIState;
 }
 export const SEARCH_SUBMIT = 'SEARCH_SUBMIT';
-
+export const DO_RESET = 'DO_RESET';
 interface SearchSubmitActions {
   type: typeof SEARCH_SUBMIT;
   payload: MainUIState;
 }
 
-export type UiActionTypes = SearchSubmitActions;
+interface DoResetActions {
+  type: typeof DO_RESET;
+}
+
+export type UiActionTypes = SearchSubmitActions | DoResetActions;

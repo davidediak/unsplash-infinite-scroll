@@ -22,6 +22,7 @@ export default function Home(props) {
       const query = queryFromRoute.split(',').filter(t => t !== '');
       dispatch({type: SEARCH_SUBMIT, payload: {query}});
     }
+    // eslint-disable-next-line
   }, [queryFromRoute]);
 
   const handleSubmit = (query: string[]) => {
@@ -32,7 +33,7 @@ export default function Home(props) {
 
   return (
     <Fragment>
-      <Navbar onSubmit={handleSubmit} queryFromRoute={queryFromRoute} />
+      <Navbar onSubmit={handleSubmit} />
       <ImageScroll haveQueryFromRoute={Boolean(queryFromRoute)} />
     </Fragment>
   );

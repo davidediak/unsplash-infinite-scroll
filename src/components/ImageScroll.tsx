@@ -32,7 +32,7 @@ export default function ImageScroll({haveQueryFromRoute}: {haveQueryFromRoute: b
   const query = useSelector<ReducersStates, string[]>(state => state.UI.mainUI.query);
 
   const fetchData = () => {
-    console.log('fetch', page);
+    console.log(`fetch (page ${page} query ${query})`);
     getData({query, page}).then(res => {
       setImage(prevImages => [...prevImages, ...res.data.results]);
       setTotalImages(res.data.total);
@@ -61,6 +61,7 @@ export default function ImageScroll({haveQueryFromRoute}: {haveQueryFromRoute: b
     if (page === 0) {
       if (isFirstNormalLoading || isLoadingWithQueryInRoute || isNormalSearch) setPage(1);
     } else fetchData();
+    // eslint-disable-next-line
   }, [firstNormalLoad, page]);
 
   const handleScroll = () => {
