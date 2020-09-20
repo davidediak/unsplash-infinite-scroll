@@ -5,7 +5,6 @@ import Navbar from '../components/Navbar';
 import {SEARCH_SUBMIT, UiActionTypes} from '../redux/types';
 
 export default function Home(props) {
-  // TODO shadowbox on images
   const dispatch: Dispatch<UiActionTypes> = useDispatch();
   const queryFromRoute: string = props?.match?.params?.queries;
 

@@ -21,6 +21,7 @@ const StyImg = styled.img`
   max-height: 100%;
   max-width: 100%;
   margin: 5px;
+  box-shadow: 1px 1px 15px -1px #888;
   @media (max-width: 900px) {
     height: 250px;
   }
@@ -56,6 +57,10 @@ const StyDialog = styled(Dialog)`
       }
     }
   }
+`;
+
+const StyInfoContainer = styled.div`
+  margin-top: 25px;
 `;
 
 export default function ImageDetail({
@@ -100,15 +105,17 @@ export default function ImageDetail({
               style={{visibility: imageLoading ? 'hidden' : 'visible'}}
             />
           </ImgContainer>
-          <StyTypography>
-            <label>User:</label> {unsplashImage?.user?.name}
-          </StyTypography>
-          <StyTypography>
-            <label>Likes:</label> {unsplashImage?.likes}
-          </StyTypography>
-          <StyTypography>
-            <label>Date:</label> {dayjs(unsplashImage?.created_at).format('MMM D, YYYY')}
-          </StyTypography>
+          <StyInfoContainer>
+            <StyTypography>
+              <label>User:</label> {unsplashImage?.user?.name}
+            </StyTypography>
+            <StyTypography>
+              <label>Likes:</label> {unsplashImage?.likes}
+            </StyTypography>
+            <StyTypography>
+              <label>Date:</label> {dayjs(unsplashImage?.created_at).format('MMM D, YYYY')}
+            </StyTypography>
+          </StyInfoContainer>
         </MuiDialogContent>
       </StyDialog>
     </div>
