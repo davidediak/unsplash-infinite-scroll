@@ -1,5 +1,5 @@
 import {CircularProgress, LinearProgress} from '@material-ui/core';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {useSelector} from 'react-redux';
 import styled from 'styled-components';
@@ -23,59 +23,51 @@ const StyNoResults = styled(StyLoadingContainer)`
     font-size: 4rem;
   }
 `;
-export default function ImageScroll({haveQueryFromRoute}: {haveQueryFromRoute: boolean}) {
-  const [firstNormalLoad, setFirstNormalLoad] = useState(true);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(0);
+export default function ImageScroll({readyToStart}: {readyToStart: boolean}) {
+  const loading = useRef(true);
+  const totalImages = useRef(0);
+  const [page, setPage] = useState(1);
   const [images, setImage] = useState<UnsplashImage[]>([]);
-  const [totalImages, setTotalImages] = useState(0);
   const query = useSelector<ReducersStates, string[]>(state => state.UI.mainUI.query);
 
   const fetchData = () => {
     console.log(`fetch (page ${page} query ${query})`);
     getData({query, page}).then(res => {
+      totalImages.current = res.data.total;
+      loading.current = false;
       setImage(prevImages => [...prevImages, ...res.data.results]);
-      setTotalImages(res.data.total);
-      if (loading) setLoading(false);
-      if (firstNormalLoad) setFirstNormalLoad(false);
     });
   };
 
   const genereateKey = () => Math.random().toString();
 
   useEffect(() => {
-    setPage(0);
-    setImage([]);
-    setLoading(true);
-    setFirstNormalLoad(false);
-  }, [query]);
-
-  useEffect(() => {
-    if (haveQueryFromRoute) setFirstNormalLoad(false);
-  }, [haveQueryFromRoute]);
-
-  useEffect(() => {
-    const isFirstNormalLoading = firstNormalLoad && !haveQueryFromRoute;
-    const isLoadingWithQueryInRoute = !firstNormalLoad && haveQueryFromRoute;
-    const isNormalSearch = !firstNormalLoad && !haveQueryFromRoute;
-    if (page === 0) {
-      if (isFirstNormalLoading || isLoadingWithQueryInRoute || isNormalSearch) setPage(1);
-    } else fetchData();
+    if (readyToStart) {
+      setPage(1);
+      setImage([]);
+      loading.current = true;
+      fetchData();
+    }
     // eslint-disable-next-line
-  }, [firstNormalLoad, page]);
+  }, [JSON.stringify(query), readyToStart]);
+
+  useEffect(() => {
+    if (page > 1) fetchData();
+    // eslint-disable-next-line
+  }, [page]);
 
   const handleScroll = () => {
     setPage(page => page + 1);
   };
 
-  if (loading)
+  if (loading.current)
     return (
       <StyLoadingContainer>
         <CircularProgress />
       </StyLoadingContainer>
     );
 
-  if (!loading && images?.length === 0)
+  if (!loading.current && images?.length === 0)
     return (
       <StyImagesContainer>
         <StyNoResults>No results</StyNoResults>
@@ -87,7 +79,7 @@ export default function ImageScroll({haveQueryFromRoute}: {haveQueryFromRoute: b
       <InfiniteScroll
         dataLength={images.length}
         next={handleScroll}
-        hasMore={images.length < totalImages}
+        hasMore={images.length < totalImages.current}
         style={{overflow: 'hidden'}}
         loader={<LinearProgress />}>
         <StyImagesContainer>
