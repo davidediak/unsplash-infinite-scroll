@@ -1,3 +1,6 @@
+You need a unsplash api key, paste it in a '.env.local' file.
+
+
 ### `npm i`
 
 Install all dependencies
